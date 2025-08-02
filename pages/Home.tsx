@@ -238,10 +238,11 @@ function HeroSection({ scrollToSection, isLoaded }: {
 
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
   const handleMouseLeave = useCallback(() => setIsHovered(false), []);
-  const handleExploreClick = useCallback(() => scrollToSection('technology'), [scrollToSection]);
+  const handleExploreClick = useCallback(() => scrollToSection('products'), [scrollToSection]);
 
   return (
     <section id="hero" className="min-h-screen flex items-center justify-center relative overflow-hidden pt-8 sm:pt-16 z-20">
+      <video src="bgvid/bgv1.mp4" autoPlay loop muted className="absolute inset-0 w-full h-full object-cover"/>
       {/* Professional background overlay */}
       <div className="absolute inset-0 overflow-hidden">
         <div className={`absolute inset-0 transition-all duration-2000 ${
@@ -288,7 +289,7 @@ function HeroSection({ scrollToSection, isLoaded }: {
         </div>
 
         {/* Responsive subtitle */}
-        <div className={`mb-8 sm:mb-12 transition-all duration-1000 delay-700 ${
+        {/* <div className={`mb-8 sm:mb-12 transition-all duration-1000 delay-700 ${
           isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
           <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed px-4">
@@ -296,7 +297,7 @@ function HeroSection({ scrollToSection, isLoaded }: {
             we craft the silent intelligence that powers tomorrow.<br className="hidden sm:block" />
             Energy, reimagined through purpose, precision, and possibility.
           </p>
-        </div>
+        </div> */}
 
         {/* Responsive CTA Button */}
         <div className={`flex justify-center transition-all duration-1000 delay-1000 ${

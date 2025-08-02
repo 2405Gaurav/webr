@@ -7,8 +7,11 @@ import TechnologySection from '../pages/TechnologySection' // Your component
 export default function Page() {
   return <>
   <Home />  
+  <div className='bg-slate-900'>
+
+  <ProductsSection  />
   <TechnologySection />
-    <ProductsSection />
   <ContactSection />
+  </div>
   </>
 }

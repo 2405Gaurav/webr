@@ -8,7 +8,7 @@ function ContactSection() {
   const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true });
 
   return (
-    <section id="contact" className="py-20 relative bg-white text-gray-900 dark:bg-slate-900 dark:text-white">
+    <section id="contact" className="py-20 relative">
       {/* Vertical soft background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b  via-blue-900/40 to-transparent" />
 

@@ -80,13 +80,13 @@ const ElectricChipNavbar = () => {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+    <nav className={`fixed top-0  opacity-90 z-50 left-0 right-0  transition-all duration-500 ${
       isScrolled 
         ? 'bg-slate-800/95 backdrop-blur-sm border-b border-slate-700/50' 
         : 'bg-transparent'
     }`}>
       {/* Sunray gradient background */}
-      <div className="absolute inset-0 h-8 bg-gradient-to-br from-slate-700/20 via-slate-800/30 to-slate-900/40 pointer-events-none"></div>
+      {/* <div className="absolute inset-0 h-8 bg-gradient-to-br from-slate-700/20 via-slate-800/30 to-slate-900/40 pointer-events-none"></div> */}
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-1.5">
         <div className="flex items-center justify-between h-14 sm:h-16">

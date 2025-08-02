@@ -14,7 +14,7 @@ function TechnologySection() {
                     setSectionInView(true);
                 }
             },
-            { threshold: 0.2 }
+            // { threshold: 0.2 }
         );
 
         if (sectionRef.current) {
@@ -74,9 +74,8 @@ function TechnologySection() {
     return (
         <section
             id="technology"
-            className="py-20 relative bg-white text-gray-900 dark:bg-slate-900 dark:text-white"
+            className="py-20 relative"
         >
-            <div className="absolute inset-0 bg-black/5 dark:bg-black/10"></div>
             <div className="max-w-7xl mx-auto px-6 relative z-10" ref={sectionRef}>
                 <div className={`text-center mb-16 py-6 transition-all duration-1000 ${sectionInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                     <div className="inline-block mb-4">
