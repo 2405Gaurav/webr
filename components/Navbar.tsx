@@ -1,6 +1,6 @@
 "use client";
-import React, { useState,  useEffect, ReactNode } from 'react';
-import { ChevronDown,Menu, X } from 'lucide-react';
+import React, { useState, useEffect, ReactNode } from 'react';
+import { ChevronDown, Menu, X } from 'lucide-react';
 import {MovingBorderDemo} from './MovingBorderDemo';
 
 // Button Component Props Interface
@@ -19,7 +19,7 @@ const Button = ({ id, title, rightIcon, leftIcon, containerClass, onClick }: But
     <button
       id={id}
       onClick={onClick}
-      className={`group relative overflow-hidden px-6 py-2.5 text-sm font-medium transition-all duration-300 ${containerClass}`}
+      className={`group relative overflow-hidden px-3 sm:px-6 py-2.5 text-xs sm:text-sm font-medium transition-all duration-300 ${containerClass}`}
     >
       {leftIcon}
       <span className="relative inline-flex overflow-hidden tracking-wide">
@@ -63,8 +63,20 @@ const ElectricChipNavbar = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
+    
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   return (
@@ -76,17 +88,16 @@ const ElectricChipNavbar = () => {
       {/* Sunray gradient background */}
       <div className="absolute inset-0 h-8 bg-gradient-to-br from-slate-700/20 via-slate-800/30 to-slate-900/40 pointer-events-none"></div>
       
-      <div className="relative max-w-7xl mx-auto px-6 py-1.5">
-        <div className="flex items-center justify-between h-16">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-1.5">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           
           {/* Logo Section */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 flex-shrink-0">
             <MovingBorderDemo />
-           
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
             {navItems.map((item, index) => (
               <div 
                 key={index} 
@@ -117,14 +128,14 @@ const ElectricChipNavbar = () => {
           </div>
 
           {/* Right Section */}
-          <div className="flex items-center space-x-3">
-            {/* Sign In Button */}
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            {/* History Button */}
             <Button
               title="History"
               containerClass="bg-transparent border border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white hidden sm:block"
             />
             
-            {/* Install Button */}
+            {/* Lets Chip it Button */}
             <Button
               title="Lets Chip it"
               containerClass="bg-slate-600 hover:bg-slate-500 text-white border border-slate-500"
@@ -135,7 +146,7 @@ const ElectricChipNavbar = () => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="lg:hidden bg-slate-700 border border-slate-600 p-2 text-slate-300 hover:text-white"
             >
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isMobileMenuOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
             </button>
           </div>
         </div>
@@ -143,7 +154,7 @@ const ElectricChipNavbar = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="lg:hidden absolute top-full left-0 right-0 bg-slate-800 border-b border-slate-700 shadow-xl">
-            <div className="px-6 py-6 space-y-4">
+            <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4">
               {navItems.map((item, index) => (
                 <div key={index}>
                   <button className="flex items-center justify-between w-full text-left text-slate-300 hover:text-white transition-colors duration-200 py-2 text-sm font-medium">
@@ -168,11 +179,11 @@ const ElectricChipNavbar = () => {
               
               <div className="pt-4 border-t border-slate-700 space-y-3">
                 <Button
-                  title="Sign In"
-                  containerClass="bg-transparent border border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white w-full"
+                  title="History"
+                  containerClass="bg-transparent border border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white w-full sm:hidden"
                 />
                 <Button
-                  title="Install"
+                  title="Lets Chip it"
                   containerClass="bg-slate-600 hover:bg-slate-500 text-white border border-slate-500 w-full"
                 />
               </div>
