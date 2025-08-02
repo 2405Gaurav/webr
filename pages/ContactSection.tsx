@@ -95,9 +95,9 @@ function ContactSection() {
         <div className="max-w-7xl mx-auto px-6 text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <Cpu className="w-6 h-6 text-slate-500" />
-            <span className="text-lg font-bold text-slate-400">ChipCore</span>
+            <span className="text-lg font-bold text-slate-400">Webber</span>
           </div>
-          <p className="text-slate-500">© 2024 ChipCore. All rights reserved.</p>
+          <p className="text-slate-500">© 2024 Webber. All rights reserved.</p>
         </div>
       </div>
     </section>
