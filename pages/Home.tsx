@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Building2, Cpu, Users, Zap } from 'lucide-react';
+import { ChevronDown, ArrowRight } from 'lucide-react';
 
 interface MousePosition {
   x: number;
@@ -22,8 +22,11 @@ export default function Home() {
   const [scrollY, setScrollY] = useState<number>(0);
   const [mousePos, setMousePos] = useState<MousePosition>({ x: 0, y: 0 });
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  console.log(scrollY);
+  console.log(mousePos);
 
   useEffect(() => {
+    // Trigger loading animation
     const timer = setTimeout(() => {
       setIsLoaded(true);
     }, 100);
@@ -32,10 +35,10 @@ export default function Home() {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePos({ x: e.clientX, y: e.clientY });
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('mousemove', handleMouseMove);
-    
+
     return () => {
       clearTimeout(timer);
       window.removeEventListener('scroll', handleScroll);
@@ -48,12 +51,19 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
-      {/* Particle Effects */}
-      <ParticleField isLoaded={isLoaded} />
-      
-      {/* Navigation */}
-      {/* <Navigation /> */}
+    <div className={`transition-all duration-2000 ease-out overflow-x-hidden min-h-screen relative ${isLoaded
+        ? 'bg-gradient-to-b from-gray-900 via-gray-700  to-gray-900'
+        : 'bg-gray-800'
+      }`} style={{
+        background: isLoaded
+          ? 'linear-gradient(180deg, #1f2937 0%, #374151 20%, #6b7280 40%, #9ca3af 50%, #d1d5db 60%, #9ca3af 70%, #6b7280 80%, #374151 90%, #1f2937 100%)'
+          : '#1f2937'
+      }}>
+      {/* Particle Effect */}
+      <ParticleEffect isLoaded={isLoaded} />
+
+      {/* Enhanced Circuit Board Overlay */}
+      <CircuitOverlay isLoaded={isLoaded} />
 
       {/* Hero Section */}
       <HeroSection scrollToSection={scrollToSection} isLoaded={isLoaded} />
@@ -61,302 +71,195 @@ export default function Home() {
   );
 }
 
-function ParticleField({ isLoaded }: { isLoaded: boolean }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef = useRef<Particle[]>([]);
-  const animationRef = useRef<number>();
+function ParticleEffect({ isLoaded }: { isLoaded: boolean }) {
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const animationRef = useRef<number>(null);
 
   useEffect(() => {
     if (!isLoaded) return;
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // Initialize particles with electric theme
-    const initParticles = () => {
-      particlesRef.current = [];
-      for (let i = 0; i < 60; i++) {
-        particlesRef.current.push({
-          id: i,
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: (Math.random() - 0.5) * 0.3,
-          opacity: Math.random() * 0.6 + 0.2,
-          size: Math.random() * 2 + 0.5
-        });
-      }
-    };
-
-    initParticles();
+    // Initialize particles
+    const initialParticles: Particle[] = [];
+    for (let i = 0; i < 50; i++) {
+      initialParticles.push({
+        id: i,
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        opacity: Math.random() * 0.3 + 0.1,
+        size: Math.random() * 2 + 1
+      });
+    }
+    setParticles(initialParticles);
 
     const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      particlesRef.current.forEach(particle => {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-
-        // Wrap around screen
-        if (particle.x < 0) particle.x = canvas.width;
-        if (particle.x > canvas.width) particle.x = 0;
-        if (particle.y < 0) particle.y = canvas.height;
-        if (particle.y > canvas.height) particle.y = 0;
-
-        // Draw particle with electric blue glow
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        
-        // Create electric glow effect
-        const gradient = ctx.createRadialGradient(
-          particle.x, particle.y, 0,
-          particle.x, particle.y, particle.size * 3
-        );
-        gradient.addColorStop(0, `rgba(59, 130, 246, ${particle.opacity})`);
-        gradient.addColorStop(0.5, `rgba(147, 197, 253, ${particle.opacity * 0.3})`);
-        gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
-        
-        ctx.fillStyle = gradient;
-        ctx.fill();
-      });
-
-      // Draw electric connections
-      particlesRef.current.forEach((particle, i) => {
-        particlesRef.current.slice(i + 1).forEach(otherParticle => {
-          const dx = particle.x - otherParticle.x;
-          const dy = particle.y - otherParticle.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < 120) {
-            ctx.beginPath();
-            ctx.moveTo(particle.x, particle.y);
-            ctx.lineTo(otherParticle.x, otherParticle.y);
-            
-            const opacity = 0.15 * (1 - distance / 120);
-            const gradient = ctx.createLinearGradient(
-              particle.x, particle.y,
-              otherParticle.x, otherParticle.y
-            );
-            gradient.addColorStop(0, `rgba(59, 130, 246, ${opacity})`);
-            gradient.addColorStop(0.5, `rgba(147, 197, 253, ${opacity * 0.8})`);
-            gradient.addColorStop(1, `rgba(59, 130, 246, ${opacity})`);
-            
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-          }
-        });
-      });
-
+      setParticles(prevParticles =>
+        prevParticles.map(particle => ({
+          ...particle,
+          x: (particle.x + particle.vx + window.innerWidth) % window.innerWidth,
+          y: (particle.y + particle.vy + window.innerHeight) % window.innerHeight,
+          opacity: 0.1 + Math.sin(Date.now() * 0.001 + particle.id) * 0.1
+        }))
+      );
       animationRef.current = requestAnimationFrame(animate);
     };
 
     animate();
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
     };
   }, [isLoaded]);
 
+  if (!isLoaded) return null;
+
   return (
-    <canvas
-      ref={canvasRef}
-      className={`fixed inset-0 pointer-events-none z-10 transition-opacity duration-2000 ${
-        isLoaded ? 'opacity-100' : 'opacity-0'
-      }`}
-    />
+    <div className="fixed inset-0 pointer-events-none z-5">
+      {particles.map(particle => (
+        <div
+          key={particle.id}
+          className="absolute bg-white rounded-full"
+          style={{
+            left: `${particle.x}px`,
+            top: `${particle.y}px`,
+            width: `${particle.size}px`,
+            height: `${particle.size}px`,
+            opacity: particle.opacity,
+            boxShadow: `0 0 ${particle.size * 2}px rgba(255, 255, 255, ${particle.opacity})`
+          }}
+        />
+      ))}
+    </div>
   );
 }
 
-// function Navigation() {
-//   return (
-//     <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
-//       <div className="max-w-7xl mx-auto flex items-center justify-between">
-//         <div className="flex items-center space-x-3">
-//           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded border border-blue-400 flex items-center justify-center">
-//             <Cpu className="w-5 h-5 text-white" />
-//           </div>
-//           <span className="text-white font-bold text-xl">ChipTech</span>
-//         </div>
-        
-//         <div className="hidden md:flex items-center space-x-8">
-//           <a href="#" className="text-slate-300 hover:text-white transition-colors">Products</a>
-//           <a href="#" className="text-slate-300 hover:text-white transition-colors">Technology</a>
-//           <a href="#" className="text-slate-300 hover:text-white transition-colors">Solutions</a>
-//           <a href="#" className="text-slate-300 hover:text-white transition-colors">About</a>
-//         </div>
-        
-//         <div className="flex items-center space-x-4">
-//           <button className="text-slate-300 hover:text-white transition-colors px-4 py-2 rounded-lg border border-slate-600 hover:border-slate-500">
-//             Contact
-//           </button>
-//           <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-//             Get Quote
-//           </button>
-//         </div>
-//       </div>
-//     </nav>
-//   );
-// }
-
-function CountUpNumber({ end, duration, delay, suffix = "" }: { end: number; duration: number; delay: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  const [started, setStarted] = useState(false);
-
-  useEffect(() => {
-    const startTimer = setTimeout(() => {
-      setStarted(true);
-    }, delay);
-
-    return () => clearTimeout(startTimer);
-  }, [delay]);
-
-  useEffect(() => {
-    if (!started) return;
-
-    let startTime: number;
-    let animationId: number;
-
-    const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime;
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      
-      const easeOut = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(end * easeOut));
-
-      if (progress < 1) {
-        animationId = requestAnimationFrame(animate);
-      }
-    };
-
-    animationId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationId);
-  }, [started, end, duration]);
-
-  return <span>{count.toLocaleString()}{suffix}</span>;
-}
-
-function StatsSection({ isLoaded }: { isLoaded: boolean }) {
+function CircuitOverlay({ isLoaded }: { isLoaded: boolean }) {
   return (
-    <div className={`grid grid-cols-3 gap-6 max-w-4xl mx-auto mb-12 transition-all duration-1000 ${
-      isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-    }`} style={{ transitionDelay: '900ms' }}>
-      <div className="text-center group border border-slate-600/60 rounded-lg p-6 hover:border-blue-500/60 transition-all duration-300 bg-slate-800/30 backdrop-blur-sm">
-        <div className="flex justify-center mb-3">
-          <Building2 className="w-8 h-8 text-blue-400 group-hover:text-blue-300 transition-colors duration-300" />
-        </div>
-        <div className="text-3xl font-bold text-white mb-2">
-          <CountUpNumber end={850} duration={2000} delay={1500} suffix="+" />
-        </div>
-        <div className="text-sm text-slate-300 font-medium uppercase tracking-wide">Companies Served</div>
+    <div className={`fixed inset-0 pointer-events-none z-10 transition-opacity duration-2000 ${isLoaded ? 'opacity-20' : 'opacity-0'
+      }`}>
+      {/* Professional circuit lines */}
+      <div className="absolute top-16 left-8 w-64 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent animate-pulse"></div>
+      <div className="absolute top-24 right-16 w-48 h-px bg-gradient-to-r from-transparent via-gray-400 to-transparent"></div>
+      <div className="absolute bottom-32 left-1/4 w-72 h-px bg-gradient-to-r from-transparent via-blue-300 to-transparent animate-pulse" style={{ animationDelay: '1s' }}></div>
+      <div className="absolute top-1/2 right-1/3 w-40 h-px bg-gradient-to-r from-transparent via-gray-500 to-transparent"></div>
+
+      {/* Sophisticated circuit nodes */}
+      <div className="absolute top-16 left-20 w-2 h-2 bg-blue-400 rounded-full animate-pulse shadow-lg shadow-blue-400/30"></div>
+      <div className="absolute top-48 right-24 w-1.5 h-1.5 bg-gray-400 rounded-full animate-pulse shadow-lg shadow-gray-400/30" style={{ animationDelay: '0.8s' }}></div>
+      <div className="absolute bottom-48 left-1/3 w-2 h-2 bg-blue-300 rounded-full animate-pulse shadow-lg shadow-blue-300/30" style={{ animationDelay: '1.2s' }}></div>
+
+      {/* Professional chip components */}
+      <div className="absolute top-1/4 right-1/4 w-8 h-12 bg-gradient-to-b from-gray-700 to-gray-900 border border-gray-500 opacity-60 shadow-xl">
+        <div className="w-full h-0.5 bg-blue-400 mt-2"></div>
+        <div className="w-full h-0.5 bg-gray-400 mt-1"></div>
       </div>
-      
-      <div className="text-center group border border-slate-600/60 rounded-lg p-6 hover:border-blue-500/60 transition-all duration-300 bg-slate-800/30 backdrop-blur-sm">
-        <div className="flex justify-center mb-3">
-          <Cpu className="w-8 h-8 text-blue-400 group-hover:text-blue-300 transition-colors duration-300" />
-        </div>
-        <div className="text-3xl font-bold text-white mb-2">
-          <CountUpNumber end={25} duration={2000} delay={1700} suffix="M+" />
-        </div>
-        <div className="text-sm text-slate-300 font-medium uppercase tracking-wide">Chips Manufactured</div>
-      </div>
-      
-      <div className="text-center group border border-slate-600/60 rounded-lg p-6 hover:border-blue-500/60 transition-all duration-300 bg-slate-800/30 backdrop-blur-sm">
-        <div className="flex justify-center mb-3">
-          <Users className="w-8 h-8 text-blue-400 group-hover:text-blue-300 transition-colors duration-300" />
-        </div>
-        <div className="text-3xl font-bold text-white mb-2">
-          <CountUpNumber end={15} duration={2000} delay={1900} suffix="+" />
-        </div>
-        <div className="text-sm text-slate-300 font-medium uppercase tracking-wide">Years Experience</div>
+      <div className="absolute bottom-1/3 left-1/6 w-12 h-8 bg-gradient-to-r from-gray-700 to-gray-900 border border-gray-500 opacity-60 shadow-xl">
+        <div className="h-full w-0.5 bg-blue-300 ml-2"></div>
+        <div className="h-full w-0.5 bg-gray-500 ml-1"></div>
       </div>
     </div>
   );
 }
 
-function HeroSection({ scrollToSection, isLoaded }: { 
+
+
+function HeroSection({ scrollToSection, isLoaded }: {
   scrollToSection: (sectionId: string) => void;
   isLoaded: boolean;
 }) {
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  console.log(isHovered)
+
   return (
-    <section id="hero" className="min-h-screen flex items-center justify-center relative z-20 pt-20">
-      <div className="max-w-6xl mx-auto px-6 text-center">
-        {/* Main Heading */}
-        <div className="space-y-6 mb-8">
-          <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
-            {/* Better Chip. Better Ride. */}
-            <div className={`transition-all duration-1000 ${
-              isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`} style={{ transitionDelay: '300ms' }}>
-              <span className="text-slate-400">Better</span>{' '}
-              <span className="text-white">Chip.</span>{' '}
-              <span className="text-slate-400">Better</span>{' '}
-              <span className="text-white">Ride.</span>
-            </div>
-            
-            {/* Better Power. */}
-            <div className={`transition-all duration-1000 ${
-              isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`} style={{ transitionDelay: '500ms' }}>
-              <span className="text-slate-400">Better</span>{' '}
-              <span className="text-white">Power.</span>
-            </div>
-          </h1>
-        </div>
+    <section id="hero" className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 z-20">
+      {/* Professional background overlay */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className={`absolute inset-0 transition-all duration-2000 ${isLoaded
+            ? 'bg-black/10'
+            : 'bg-black/50'
+          }`} />
 
-        {/* Description */}
-        <div className={`max-w-3xl mx-auto mb-12 transition-all duration-1000 ${
-          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`} style={{ transitionDelay: '700ms' }}>
-          <p className="text-xl text-slate-300 leading-relaxed">
-            Leading manufacturer of high-performance electric vehicle chips<br />
-            powering the future of sustainable transportation.
-          </p>
-        </div>
-
-        {/* Company Statistics */}
-        <StatsSection isLoaded={isLoaded} />
-
-        {/* CTA Button */}
-        <div className={`flex justify-center transition-all duration-1000 ${
-          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`} style={{ transitionDelay: '1100ms' }}>
-          <button className="group relative bg-slate-800/60 hover:bg-slate-700/60 border border-slate-600 hover:border-blue-500/60 text-white px-10 py-4 rounded-xl font-semibold transition-all duration-500 flex items-center space-x-3 backdrop-blur-sm">
-            {/* Electric glow effect */}
-            <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-blue-500/20 via-blue-400/25 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-all duration-700 blur-sm"></div>
-            
-            <div className="relative flex items-center space-x-3">
-              <Zap className="w-5 h-5 text-blue-400 group-hover:text-blue-300 transition-colors duration-300" />
-              <span className="group-hover:text-blue-50 transition-colors duration-300">Explore Products</span>
-            </div>
-          </button>
+        {/* Subtle professional rays */}
+        <div className={`absolute top-0 right-0 w-full h-full transition-opacity duration-2000 ${isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}>
+          <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-radial from-blue-400/5 via-transparent to-transparent transform rotate-12"></div>
+          <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-gradient-radial from-gray-400/8 via-transparent to-transparent transform rotate-45"></div>
         </div>
       </div>
 
-      {/* Scroll Indicator */}
+      <div className="max-w-4xl mx-auto px-6 py-20 relative z-30 text-center">
+        {/* Main headline with smaller text */}
+        <div className="space-y-4 mb-8">
+          <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight">
+            {['Better Chip. Better Battery.', 'Better Power.'].map((text, index) => (
+              <div key={index} className={`relative inline-block group overflow-hidden transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                }`} style={{ transitionDelay: `${500 + index * 200}ms` }}>
+                <span className="text-white group-hover:text-gray-100 transition-colors duration-500 relative z-10">
+                  {text}
+                </span>
+
+                {/* Refined traveling effect */}
+                <div className="absolute inset-0 overflow-hidden">
+                  <div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/30 to-transparent opacity-0 group-hover:opacity-100 transform -translate-x-full group-hover:translate-x-full transition-all duration-2000 ease-out"
+                    style={{ width: '150%' }}
+                  ></div>
+                </div>
+
+                {/* Subtle base enhancement */}
+                <div className="absolute inset-0 text-blue-400/10 blur-sm group-hover:text-blue-400/20 transition-all duration-500">
+                  {text}
+                </div>
+                {index < 1 && <br />}
+              </div>
+            ))}
+          </h1>
+        </div>
+
+        {/* Subtitle */}
+        <div className={`mb-12 transition-all duration-1000 delay-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}>
+          <p className="text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            We don&apos;t just build battery chips —<br />
+            we craft the silent intelligence that powers tomorrow.<br />
+            Energy, reimagined through purpose, precision, and possibility.
+          </p>
+
+        </div>
+
+        {/* Professional CTA Button */}
+        <div className={`flex justify-center transition-all duration-1000 delay-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}>
+          <div className="relative group"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}>
+
+            {/* Professional glow */}
+            <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-blue-400/20 via-white/25 to-blue-400/20 opacity-0 group-hover:opacity-100 transition-all duration-700 blur-sm"></div>
+
+            <button className="relative px-8 py-3 bg-gray-700/90 hover:bg-gray-600/90 border border-gray-600/60 hover:border-blue-400/40 text-white font-semibold transition-all duration-700 flex items-center space-x-3 group rounded-xl text-base shadow-xl">
+              <span className="group-hover:text-blue-100 transition-colors duration-500">Explore Products</span>
+
+              <div className="flex items-center space-x-2">
+                {/* <Zap className="w-4 h-4 text-blue-400 group-hover:text-blue-300 transition-colors duration-500" /> */}
+                <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-300 transition-all duration-500 group-hover:translate-x-1" />
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Professional scroll indicator */}
       <button
         onClick={() => scrollToSection('technology')}
-        className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 text-slate-400 hover:text-blue-400 transition-all duration-300 ${
-          isLoaded ? 'opacity-100 animate-bounce' : 'opacity-0'
-        }`}
+        className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 text-gray-400 hover:text-gray-200 transition-all duration-700 ${isLoaded ? 'opacity-100 animate-bounce' : 'opacity-0'
+          }`}
         style={{ transitionDelay: '1500ms' }}
       >
-        <ChevronDown className="w-6 h-6" />
+        <ChevronDown className="w-5 h-5" />
       </button>
     </section>
   );

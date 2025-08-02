@@ -1,7 +1,6 @@
 "use client";
 import React, { useState,  useEffect, ReactNode } from 'react';
 import { ChevronDown,Menu, X } from 'lucide-react';
-import Image from 'next/image';
 import {MovingBorderDemo} from './MovingBorderDemo';
 
 // Button Component Props Interface
